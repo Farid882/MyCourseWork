@@ -72,4 +72,16 @@ public class Movie {
         this.poster = poster;
         this.rating = rating;
     }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", year=" + year +
+                ", poster=" + poster +
+                ", rating=" + rating +
+                '}';
+    }
 }
