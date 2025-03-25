@@ -1,5 +1,7 @@
 package com.example.mycourse;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 public class Poster {
@@ -13,6 +15,7 @@ public class Poster {
         return url;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Poster{" +

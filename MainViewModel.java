@@ -20,7 +20,7 @@ public class MainViewModel extends AndroidViewModel {
     private int page = 1;
     private static final String TAG = "MainViewModel";
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
-    private  MutableLiveData<List<Movie>> movies = new MutableLiveData<>();
+    private final MutableLiveData<List<Movie>> movies = new MutableLiveData<>();
 
     public MainViewModel(@NonNull Application application) {
         super(application);

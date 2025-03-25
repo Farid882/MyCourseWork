@@ -1,5 +1,7 @@
 package com.example.mycourse;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -15,6 +17,7 @@ public class MovieResponse {
     }
 
 
+    @NonNull
     @Override
     public String toString() {
         return "MovieResponse{" +
