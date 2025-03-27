@@ -1,9 +1,6 @@
 package com.example.mycourse;
 
-import static androidx.fragment.app.FragmentManager.TAG;
-
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,26 +9,38 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
     private List<Movie> movies = new ArrayList<>();
+    private OnreachEndListener onreachEndListener;
+
+    public void setOnreachEndListener(OnreachEndListener onreachEndListener) {
+        this.onreachEndListener = onreachEndListener;
+    }
 
     public List<Movie> getMovies() {
         return movies;
     }
 
     public void setMovies(List<Movie> movies) {
-        this.movies = movies;
-        notifyDataSetChanged();
+        if (this.movies == null) {
+            this.movies = movies;
+            notifyDataSetChanged();
+        } else {
+            MovieDiffCallback diffCallback = new MovieDiffCallback(this.movies, movies);
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+
+            this.movies.clear();
+            this.movies.addAll(movies);
+            diffResult.dispatchUpdatesTo(this);
+        }
     }
 
 
@@ -51,7 +60,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                         movie.getPoster().getUrl() : null)
                 .error(R.drawable.ic_launcher_background)
                 .into(holder.imageViewPoster);
-        double rating = movie.getRating().getKp();
+        double rating = Math.round(movie.getRating().getKp() * 10.0) / 10.0;
+
         int backgroundId;
         if (rating >= 7) {
             backgroundId = R.drawable.circle_green;
@@ -63,6 +73,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         Drawable background = ContextCompat.getDrawable(holder.itemView.getContext(), backgroundId);
         holder.textViewRating.setBackground(background);
         holder.textViewRating.setText(String.valueOf(rating));
+        if(position == movies.size() - 1 && onreachEndListener != null) {
+            onreachEndListener.onReachEnd();
+        }
+    }
+
+    interface OnreachEndListener {
+        void onReachEnd();
     }
 
     @Override
