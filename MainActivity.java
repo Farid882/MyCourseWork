@@ -1,9 +1,8 @@
 package com.example.mycourse;
 
-import static androidx.core.content.PackageManagerCompat.LOG_TAG;
-
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.ProgressBar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,10 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.functions.Consumer;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -25,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        ProgressBar progressBarLoading = findViewById(R.id.progressBarLoading);
         RecyclerView recyclerViewMovies = findViewById(R.id.recyclerViewMovies);
         MoviesAdapter moviesAdapter = new MoviesAdapter();
         recyclerViewMovies.setAdapter(moviesAdapter);
@@ -36,11 +32,28 @@ public class MainActivity extends AppCompatActivity {
                moviesAdapter.setMovies(movies);
             }
         });
-        viewModel.loadMovies();
+
+        viewModel.getIsLoaded().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                 if (isLoading) {
+                     progressBarLoading.setVisibility(ProgressBar.VISIBLE);
+                 }else {
+                     progressBarLoading.setVisibility(ProgressBar.GONE);
+                 }
+            }
+        });
         moviesAdapter.setOnreachEndListener(new MoviesAdapter.OnreachEndListener() {
             @Override
             public void onReachEnd() {
                 viewModel.loadMovies();
+            }
+        });
+        moviesAdapter.setOnMoviesClickListener(new MoviesAdapter.OnMoviesClickListener() {
+            @Override
+            public void onMovieClick(Movie movie) {
+                Intent intent = MovieDetailActivity.newIntent(MainActivity.this, movie);
+                startActivity(intent);
             }
         });
     }

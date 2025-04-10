@@ -16,13 +16,18 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
     private List<Movie> movies = new ArrayList<>();
     private OnreachEndListener onreachEndListener;
-
+    private OnMoviesClickListener onMoviesClickListener;
     public void setOnreachEndListener(OnreachEndListener onreachEndListener) {
         this.onreachEndListener = onreachEndListener;
+    }
+
+    public void setOnMoviesClickListener(OnMoviesClickListener onMoviesClickListener) {
+        this.onMoviesClickListener = onMoviesClickListener;
     }
 
     public List<Movie> getMovies() {
@@ -73,13 +78,19 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         Drawable background = ContextCompat.getDrawable(holder.itemView.getContext(), backgroundId);
         holder.textViewRating.setBackground(background);
         holder.textViewRating.setText(String.valueOf(rating));
-        if(position == movies.size() - 1 && onreachEndListener != null) {
+        if (position >= movies.size() - 10 && onreachEndListener != null) {
             onreachEndListener.onReachEnd();
         }
+        holder.itemView.setOnClickListener(v -> Optional.ofNullable(onMoviesClickListener)
+                .ifPresent(listener -> listener.onMovieClick(movie)));
     }
 
     interface OnreachEndListener {
         void onReachEnd();
+    }
+
+    interface OnMoviesClickListener {
+        void onMovieClick(Movie movie);
     }
 
     @Override
