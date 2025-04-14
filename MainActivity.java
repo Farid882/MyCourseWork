@@ -2,10 +2,13 @@ package com.example.mycourse;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuInflater;
 import android.widget.ProgressBar;
+import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -22,25 +25,27 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ProgressBar progressBarLoading = findViewById(R.id.progressBarLoading);
         RecyclerView recyclerViewMovies = findViewById(R.id.recyclerViewMovies);
+
+
         MoviesAdapter moviesAdapter = new MoviesAdapter();
         recyclerViewMovies.setAdapter(moviesAdapter);
-        recyclerViewMovies.setLayoutManager(new GridLayoutManager(this,2));
+        recyclerViewMovies.setLayoutManager(new GridLayoutManager(this, 2));
         MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
             @Override
             public void onChanged(List<Movie> movies) {
-               moviesAdapter.setMovies(movies);
+                moviesAdapter.setMovies(movies);
             }
         });
 
         viewModel.getIsLoaded().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean isLoading) {
-                 if (isLoading) {
-                     progressBarLoading.setVisibility(ProgressBar.VISIBLE);
-                 }else {
-                     progressBarLoading.setVisibility(ProgressBar.GONE);
-                 }
+                if (isLoading) {
+                    progressBarLoading.setVisibility(ProgressBar.VISIBLE);
+                } else {
+                    progressBarLoading.setVisibility(ProgressBar.GONE);
+                }
             }
         });
         moviesAdapter.setOnreachEndListener(new MoviesAdapter.OnreachEndListener() {
@@ -56,5 +61,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
 }

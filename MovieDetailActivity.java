@@ -3,25 +3,26 @@ package com.example.mycourse;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.functions.Consumer;
-import io.reactivex.rxjava3.schedulers.Schedulers;
+import java.util.List;
+
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 public class MovieDetailActivity extends AppCompatActivity {
     private static final String EXTRA_MOVIE = "movie";
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private static final String TAG = "MovieDetailActivity";
+    private TrailersAdapter trailersAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,10 @@ public class MovieDetailActivity extends AppCompatActivity {
         TextView textViewTitle = findViewById(R.id.textViewTitle);
         TextView textViewYear = findViewById(R.id.textViewYear);
         TextView textViewDescription = findViewById(R.id.textViewDescription);
+        RecyclerView recyclerViewTrailers = findViewById(R.id.recyclerViewTrailers);
+        trailersAdapter = new TrailersAdapter();
+        recyclerViewTrailers.setAdapter(trailersAdapter);
+        MovieDetailViewModel viewModel = new ViewModelProvider(this).get(MovieDetailViewModel.class);
         Movie movie = (Movie) getIntent().getSerializableExtra(EXTRA_MOVIE);
         assert movie != null;
         Glide.with(this)
@@ -42,25 +47,13 @@ public class MovieDetailActivity extends AppCompatActivity {
         textViewTitle.setText(movie.getName());
         textViewYear.setText(String.valueOf(movie.getYear()));
         textViewDescription.setText(String.valueOf(movie.getDescription()));
+        viewModel.loadTrallers(movie.getId());
+        viewModel.getTrailers().observe(this, new Observer<List<Trailer>>() {
+            @Override
+            public void onChanged(List<Trailer> trailers) {
 
-        ApiFactory.apiservice.loadMovies(movie.getId())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Consumer<MovieResponse>() {
-                                    @Override
-                                    public void accept(MovieResponse movieResponse) throws Throwable {
-                                        Log.d(TAG, movieResponse.toString());
-                                    }
-                                }, new Consumer<Throwable>() {
-                                    @Override
-                                    public void accept(Throwable throwable) throws Throwable {
-                                       Log.d(TAG, throwable.toString());
-                                    }
-                                });
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+                trailersAdapter.setTrailers(trailers);
+            }
         });
     }
 
@@ -69,4 +62,5 @@ public class MovieDetailActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_MOVIE, movie);
         return intent;
     }
+
 }

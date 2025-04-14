@@ -4,12 +4,12 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-public class TrailersResponse {
+public class TrailerResponse {
     @SerializedName("videos")
     private TrailersList trailersList;
 
-    public TrailersResponse(TrailersList trailersList) {
-        this.trailersList = trailersList;
+    public TrailerResponse(TrailersList trailersList) {
+        this.trailersList=trailersList;
     }
 
     public TrailersList getTrailersList() {
@@ -19,7 +19,7 @@ public class TrailersResponse {
     @NonNull
     @Override
     public String toString() {
-        return "TrailersResponse{" +
+        return "TrailerResponse{" +
                 "trailersList=" + trailersList +
                 '}';
     }

@@ -1,5 +1,6 @@
 package com.example.mycourse;
 
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -12,30 +13,39 @@ import java.util.List;
 
 public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.TrailersViewHolder> {
 
-    private List<Trailer> trailers = new ArrayList<>();
-
-    @NonNull
-    @Override
-    public TrailersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull TrailersViewHolder holder, int position) {
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return 0;
-    }
-
-    static class TrailersViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textViewTrailerName;
-
+    public static class TrailersViewHolder extends RecyclerView.ViewHolder {
+        private TextView textViewTrailerName;
         public TrailersViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewTrailerName = itemView.findViewById(R.id.textViewTrailerName);
         }
+    }
+
+    private List<Trailer> trailers = new ArrayList<>();
+
+    public void setTrailers(List<Trailer> trailers) {
+        this.trailers = trailers;
+        notifyDataSetChanged();
+    }
+
+
+    @NonNull
+    @Override
+    public TrailersAdapter.TrailersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(
+                R.layout.trailer_item, parent, false
+        );
+        return new TrailersViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull TrailersAdapter.TrailersViewHolder holder, int position) {
+        Trailer trailer = trailers.get(position);
+        holder.textViewTrailerName.setText(trailer.getName());
+    }
+
+    @Override
+    public int getItemCount() {
+        return trailers.size();
     }
 }
